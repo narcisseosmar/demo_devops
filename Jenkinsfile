@@ -4,31 +4,21 @@ pipeline {
 
     stages {
 
-        stage('Clone') {
+        stage('Build Docker') {
 
             steps {
 
-                git 'https://github.com/narcisseosmar/demo_devops.git'
+                sh 'docker build -t narcisseosmar/demo-devops:latest .'
 
             }
 
         }
 
-        stage('Docker Build') {
+        stage('Push Docker') {
 
             steps {
 
-                sh 'docker build -t USER/html-app:latest .'
-
-            }
-
-        }
-
-        stage('Docker Push') {
-
-            steps {
-
-                sh 'docker push USER/html-app:latest'
+                sh 'docker push narcisseosmar/demo-devops:latest'
 
             }
 
@@ -38,7 +28,14 @@ pipeline {
 
             steps {
 
-                sh 'kubectl apply -f k8s/'
+                sh 'kubectl apply -f namespace.yaml'
+
+                sh 'kubectl apply -f deployment.yaml'
+
+                sh 'kubectl apply -f service.yaml'
+
+                sh 'kubectl apply -f ingress.yaml'
+
             }
 
         }
