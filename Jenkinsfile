@@ -8,7 +8,7 @@ pipeline {
 
             steps {
 
-                sh 'docker build -t narcisseosmar/demo-devops:latest .'
+                sh 'docker build -t narcisser/demo-devops:latest .'
 
             }
 
@@ -18,7 +18,7 @@ pipeline {
 
             steps {
 
-                sh 'docker push narcisseosmar/demo-devops:latest'
+                sh 'docker push narcisser/demo-devops:latest'
 
             }
 
