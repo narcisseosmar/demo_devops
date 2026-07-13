@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+
+  name: html-app
+
+  namespace: production
+
+spec:
+
+  replicas: 2
+
+  selector:
+
+    matchLabels:
+
+      app: html
+
+  template:
+
+    metadata:
+
+      labels:
+
+        app: html
+
+    spec:
+
+      containers:
+
+      - name: html
+
+        image: USER/html-app:latest
+
+        ports:
+
+        - containerPort: 80

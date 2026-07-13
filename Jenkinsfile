@@ -1,55 +1,48 @@
 pipeline {
 
-agent any
+    agent any
 
+    stages {
 
-options {
+        stage('Clone') {
 
-buildDiscarder(
-logRotator(
-numToKeepStr:'10'
-)
-)
+            steps {
 
-}
+                git 'https://github.com/USER/html-app.git'
 
+            }
 
-stages {
+        }
 
+        stage('Docker Build') {
 
-stage('Clone') {
+            steps {
 
-steps {
+                sh 'docker build -t USER/html-app:latest .'
 
-git 'https://github.com/USER/demo-devops.git'
+            }
 
-}
+        }
 
-}
+        stage('Docker Push') {
 
+            steps {
 
-stage('Build Docker') {
+                sh 'docker push USER/html-app:latest'
 
-steps {
+            }
 
-sh 'docker build -t demo-html .'
+        }
 
-}
+        stage('Deploy Kubernetes') {
 
-}
+            steps {
 
+                sh 'kubectl apply -f k8s/'
+            }
 
-stage('Deploy') {
+        }
 
-steps {
-
-sh 'kubectl apply -f k8s/'
-
-}
-
-}
-
-
-}
+    }
 
 }
