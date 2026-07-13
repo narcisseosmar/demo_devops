@@ -28,12 +28,9 @@ spec:
 
     spec:
 
-      containers:
-
-      - name: html
-
-        image: USER/html-app:latest
-
-        ports:
-
-        - containerPort: 80
+    containers:
+     - name: html
+       image: narcisser/demo-devops:latest
+       imagePullPolicy: Always
+       ports:
+       - containerPort: 80

@@ -14,7 +14,7 @@ spec:
 
   rules:
 
-  - host: monsite.duckdns.org
+  - host: demodevops.duckdns.org
 
     http:
 
