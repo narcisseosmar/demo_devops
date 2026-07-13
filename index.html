@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PADNOVE — Test Deploy</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+  :root{
+    --bg-0:#0B0F14;
+    --bg-1:#111823;
+    --line:#1E2A38;
+    --text-hi:#E7ECF2;
+    --text-lo:#7C8B9E;
+    --ok:#3ED598;
+    --ok-dim:#173B2C;
+    --warn:#F2A541;
+    --pulse:#3ED598;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html,body{ height:100%; }
+
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(62,213,152,0.08), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 110%, rgba(242,165,65,0.06), transparent 60%),
+      var(--bg-0);
+    color:var(--text-hi);
+    font-family:'IBM Plex Mono', monospace;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:6vw 5vw;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:720px;
+  }
+
+  .eyebrow{
+    display:flex;
+    align-items:center;
+    gap:.6em;
+    font-size:.78rem;
+    letter-spacing:.14em;
+    color:var(--text-lo);
+    text-transform:uppercase;
+    margin-bottom:1.4rem;
+  }
+  .eyebrow .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--ok);
+    box-shadow:0 0 0 0 rgba(62,213,152,.6);
+    animation:dotpulse 2.4s ease-out infinite;
+  }
+  @keyframes dotpulse{
+    0%{ box-shadow:0 0 0 0 rgba(62,213,152,.55); }
+    70%{ box-shadow:0 0 0 9px rgba(62,213,152,0); }
+    100%{ box-shadow:0 0 0 0 rgba(62,213,152,0); }
+  }
+
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:clamp(1.9rem, 5vw, 2.7rem);
+    line-height:1.1;
+    letter-spacing:-.01em;
+    margin-bottom:.5rem;
+  }
+  h1 span{ color:var(--ok); }
+
+  .sub{
+    color:var(--text-lo);
+    font-size:.92rem;
+    line-height:1.6;
+    max-width:46ch;
+    margin-bottom:2.4rem;
+  }
+
+  .card{
+    background:linear-gradient(180deg, var(--bg-1), rgba(17,24,35,.6));
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:clamp(1.2rem, 3vw, 2rem);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(120deg, transparent 30%, rgba(62,213,152,.04) 50%, transparent 70%);
+    background-size:200% 100%;
+    animation:sheen 7s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes sheen{
+    0%{ background-position:200% 0; }
+    100%{ background-position:-200% 0; }
+  }
+
+  .card-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:1.6rem;
+    flex-wrap:wrap;
+    gap:.8rem;
+  }
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:.5em;
+    font-size:.78rem;
+    font-weight:600;
+    letter-spacing:.04em;
+    padding:.4em .8em;
+    border-radius:999px;
+    background:var(--ok-dim);
+    color:var(--ok);
+    border:1px solid rgba(62,213,152,.35);
+    transition:all .3s ease;
+  }
+  .badge.checking{
+    background:rgba(242,165,65,.12);
+    color:var(--warn);
+    border-color:rgba(242,165,65,.35);
+  }
+  .badge .dot2{
+    width:7px;height:7px;border-radius:50%;
+    background:currentColor;
+  }
+
+  .app-id{ color:var(--text-lo); font-size:.8rem; }
+  .app-id b{ color:var(--text-hi); font-weight:600; }
+
+  .metrics{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:1.6rem;
+  }
+
+  .metric{
+    background:var(--bg-1);
+    padding:1rem 1.1rem;
+  }
+  .metric .label{
+    font-size:.68rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--text-lo);
+    margin-bottom:.5rem;
+  }
+  .metric .value{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1.35rem;
+    font-weight:600;
+    color:var(--text-hi);
+    font-variant-numeric:tabular-nums;
+  }
+  .metric .value.accent{ color:var(--ok); }
+
+  .log{
+    background:#080B0F;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:1rem 1.1rem;
+    font-size:.78rem;
+    line-height:1.9;
+    color:var(--text-lo);
+    height:132px;
+    overflow-y:auto;
+    margin-bottom:1.5rem;
+  }
+  .log::-webkit-scrollbar{ width:6px; }
+  .log::-webkit-scrollbar-thumb{ background:var(--line); border-radius:3px; }
+
+  .log .line{ opacity:0; animation:fadein .35s ease forwards; }
+  @keyframes fadein{ to{ opacity:1; } }
+  .log .t{ color:#425065; }
+  .log .ok{ color:var(--ok); }
+  .log .warn{ color:var(--warn); }
+
+  .actions{
+    display:flex;
+    gap:.8rem;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  button{
+    font-family:inherit;
+    font-size:.85rem;
+    font-weight:600;
+    letter-spacing:.02em;
+    padding:.85em 1.4em;
+    border-radius:9px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform .15s ease, opacity .2s ease, box-shadow .2s ease;
+  }
+  button:active{ transform:scale(.97); }
+  button:focus-visible{ outline:2px solid var(--ok); outline-offset:2px; }
+
+  .btn-primary{
+    background:var(--ok);
+    color:#08130E;
+    box-shadow:0 0 0 0 rgba(62,213,152,.4);
+  }
+  .btn-primary:hover{ box-shadow:0 0 24px rgba(62,213,152,.25); }
+  .btn-primary:disabled{ opacity:.55; cursor:not-allowed; box-shadow:none; }
+
+  .btn-ghost{
+    background:transparent;
+    border-color:var(--line);
+    color:var(--text-lo);
+  }
+  .btn-ghost:hover{ color:var(--text-hi); border-color:#324056; }
+
+  footer{
+    margin-top:1.6rem;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:.6rem;
+    color:var(--text-lo);
+    font-size:.72rem;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="eyebrow"><span class="dot"></span> environnement de test</div>
+  <h1>Vérification de <span>déploiement</span></h1>
+  <p class="sub">Petite application autonome (HTML/CSS/JS) pour valider qu'un pipeline CI/CD sert bien du contenu de bout en bout — build, conteneur, reverse proxy, TLS.</p>
+
+  <div class="card">
+    <div class="card-top">
+      <span class="badge" id="statusBadge"><span class="dot2"></span><span id="statusText">opérationnel</span></span>
+      <span class="app-id">service <b>test-app</b> · rev <b id="revShort">a1c9f02</b></span>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="label">Uptime</div>
+        <div class="value" id="uptime">00:00:00</div>
+      </div>
+      <div class="metric">
+        <div class="label">Environnement</div>
+        <div class="value">staging</div>
+      </div>
+      <div class="metric">
+        <div class="label">Latence</div>
+        <div class="value accent" id="latency">— ms</div>
+      </div>
+      <div class="metric">
+        <div class="label">Requêtes</div>
+        <div class="value" id="reqCount">0</div>
+      </div>
+    </div>
+
+    <div class="log" id="log">
+      <div class="line"><span class="t">[00:00:00]</span> service prêt, en écoute sur le port 8080</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="checkBtn">Lancer un health check</button>
+      <button class="btn-ghost" id="resetBtn">Réinitialiser</button>
+    </div>
+  </div>
+
+  <footer>
+    <span>build local · sans dépendance externe</span>
+    <span id="clock">--:--:--</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const startedAt = Date.now();
+  const uptimeEl = document.getElementById('uptime');
+  const clockEl = document.getElementById('clock');
+  const logEl = document.getElementById('log');
+  const badge = document.getElementById('statusBadge');
+  const statusText = document.getElementById('statusText');
+  const latencyEl = document.getElementById('latency');
+  const reqCountEl = document.getElementById('reqCount');
+  const checkBtn = document.getElementById('checkBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const revShort = document.getElementById('revShort');
+
+  let reqCount = 0;
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function fmtTime(d){
+    return pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  }
+
+  function tick(){
+    const now = new Date();
+    clockEl.textContent = fmtTime(now);
+
+    const diff = Math.floor((Date.now() - startedAt)/1000);
+    const h = Math.floor(diff/3600);
+    const m = Math.floor((diff%3600)/60);
+    const s = diff%60;
+    uptimeEl.textContent = pad(h)+':'+pad(m)+':'+pad(s);
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  function addLog(msg, cls){
+    const now = new Date();
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.innerHTML = '<span class="t">['+fmtTime(now)+']</span> <span class="'+(cls||'')+'">'+msg+'</span>';
+    logEl.appendChild(div);
+    logEl.scrollTop = logEl.scrollHeight;
+    while(logEl.children.length > 30){
+      logEl.removeChild(logEl.firstChild);
+    }
+  }
+
+  function randHex(len){
+    const chars = 'abcdef0123456789';
+    let out = '';
+    for(let i=0;i<len;i++) out += chars[Math.floor(Math.random()*chars.length)];
+    return out;
+  }
+
+  function runCheck(){
+    checkBtn.disabled = true;
+    badge.classList.add('checking');
+    statusText.textContent = 'vérification…';
+    addLog('health check déclenché');
+
+    const steps = [
+      { delay: 250, msg: 'connexion au conteneur…' },
+      { delay: 550, msg: 'requête GET /healthz' },
+      { delay: 500, msg: 'réponse reçue', cls: 'ok' },
+    ];
+
+    let acc = 0;
+    steps.forEach(step => {
+      acc += step.delay;
+      setTimeout(() => addLog(step.msg, step.cls), acc);
+    });
+
+    setTimeout(() => {
+      const latency = 18 + Math.floor(Math.random()*60);
+      latencyEl.textContent = latency + ' ms';
+      reqCount += 1;
+      reqCountEl.textContent = reqCount;
+
+      const failed = Math.random() < 0.08;
+      if(failed){
+        addLog('code 503 — service temporairement indisponible', 'warn');
+        statusText.textContent = 'dégradé';
+        badge.classList.remove('checking');
+        badge.style.background = 'rgba(242,165,65,.12)';
+        badge.style.color = 'var(--warn)';
+        badge.style.borderColor = 'rgba(242,165,65,.35)';
+      } else {
+        addLog('code 200 — '+latency+' ms', 'ok');
+        statusText.textContent = 'opérationnel';
+        badge.classList.remove('checking');
+        badge.style.background = '';
+        badge.style.color = '';
+        badge.style.borderColor = '';
+      }
+      checkBtn.disabled = false;
+    }, acc + 200);
+  }
+
+  checkBtn.addEventListener('click', runCheck);
+
+  resetBtn.addEventListener('click', () => {
+    reqCount = 0;
+    reqCountEl.textContent = '0';
+    latencyEl.textContent = '— ms';
+    statusText.textContent = 'opérationnel';
+    badge.classList.remove('checking');
+    badge.style.background = '';
+    badge.style.color = '';
+    badge.style.borderColor = '';
+    revShort.textContent = randHex(7);
+    logEl.innerHTML = '<div class="line"><span class="t">['+fmtTime(new Date())+']</span> service réinitialisé</div>';
+  });
+})();
+</script>
+
+</body>
+</html>
