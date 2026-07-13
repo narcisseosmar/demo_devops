@@ -8,7 +8,7 @@ pipeline {
 
             steps {
 
-                git 'https://github.com/USER/html-app.git'
+                git 'https://github.com/narcisseosmar/demo_devops.git'
 
             }
 
