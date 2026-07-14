@@ -1,29 +1,33 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE = "narcisser/demo-devops:${BUILD_NUMBER}"
+    }
+
     stages {
 
-        stage('Build Docker') {
+        stage('Build') {
             steps {
-                sh 'docker build -t narcisser/demo-devops:latest .'
+                sh 'docker build --no-cache -t $IMAGE .'
             }
         }
 
-        stage('Push Docker') {
+        stage('Push') {
             steps {
-                sh 'docker push narcisser/demo-devops:latest'
+                sh 'docker push $IMAGE'
             }
         }
 
-        stage('Deploy Kubernetes') {
+        stage('Deploy') {
             steps {
-                sh 'kubectl apply -f namespace.yaml'
-                sh 'kubectl apply -f deployment.yaml'
-                sh 'kubectl apply -f service.yaml'
-                sh 'kubectl apply -f ingress.yaml'
+                sh '''
+                kubectl set image deployment/html-app \
+                html=$IMAGE \
+                -n production
 
-                sh 'kubectl rollout restart deployment/html-app -n production'
-                sh 'kubectl rollout status deployment/html-app -n production'
+                kubectl rollout status deployment/html-app -n production
+                '''
             }
         }
     }
